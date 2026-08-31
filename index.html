@@ -1,1 +1,2058 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="ASTER 1.0 is a reusable workflow for prompt and workflow optimisation. It finds what is getting in the way before deciding what to change.">
+  <title>ASTER 1.0 — Prompt &amp; workflow optimisation</title>
+  <script>
+    document.documentElement.classList.add('js');
+    try {
+      const savedTheme = localStorage.getItem('aster-theme');
+      if (savedTheme === 'light' || savedTheme === 'dark') {
+        document.documentElement.dataset.theme = savedTheme;
+      }
+    } catch (error) {}
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f5f2e9;
+      --paper-2: #fffdf7;
+      --ink: #16171a;
+      --muted: #5c5d62;
+      --line: #c9c4b7;
+      --line-strong: #16171a;
+      --violet: #5b4bf1;
+      --violet-deep: #3726ca;
+      --violet-soft: #e6e2ff;
+      --signal: #ffcf4a;
+      --signal-soft: #fff0b8;
+      --coral: #ec625c;
+      --good: #19755a;
+      --good-soft: #d8eee5;
+      --shadow: 0 18px 50px rgba(22, 23, 26, .11);
+      --radius-sm: .7rem;
+      --radius: 1.2rem;
+      --radius-lg: 2rem;
+      --max: 1180px;
+      --serif: Georgia, "Times New Roman", serif;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
 
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --paper: #11131a;
+      --paper-2: #181b24;
+      --ink: #f4f1e8;
+      --muted: #b3b3b8;
+      --line: #3e414d;
+      --line-strong: #f4f1e8;
+      --violet: #9287ff;
+      --violet-deep: #786cff;
+      --violet-soft: #2b2757;
+      --signal: #ffd765;
+      --signal-soft: #40391f;
+      --coral: #ff7c76;
+      --good: #75d2ad;
+      --good-soft: #173d32;
+      --shadow: 0 18px 60px rgba(0, 0, 0, .28);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      html:not([data-theme="light"]) {
+        color-scheme: dark;
+        --paper: #11131a;
+        --paper-2: #181b24;
+        --ink: #f4f1e8;
+        --muted: #b3b3b8;
+        --line: #3e414d;
+        --line-strong: #f4f1e8;
+        --violet: #9287ff;
+        --violet-deep: #786cff;
+        --violet-soft: #2b2757;
+        --signal: #ffd765;
+        --signal-soft: #40391f;
+        --coral: #ff7c76;
+        --good: #75d2ad;
+        --good-soft: #173d32;
+        --shadow: 0 18px 60px rgba(0, 0, 0, .28);
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--paper);
+    }
+
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 1rem;
+      line-height: 1.6;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, summary, a { -webkit-tap-highlight-color: transparent; }
+    button { font: inherit; }
+    a { color: inherit; }
+    img, svg { display: block; max-width: 100%; }
+    p, h1, h2, h3, h4 { margin-top: 0; }
+
+    ::selection {
+      background: var(--signal);
+      color: #16171a;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--signal);
+      outline-offset: 4px;
+    }
+
+    .skip-link {
+      position: fixed;
+      z-index: 100;
+      top: .75rem;
+      left: .75rem;
+      transform: translateY(-180%);
+      padding: .65rem 1rem;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--paper-2);
+      font-weight: 800;
+      transition: transform .2s ease;
+    }
+
+    .skip-link:focus { transform: translateY(0); }
+
+    .shell {
+      width: min(var(--max), calc(100% - 3rem));
+      margin-inline: auto;
+    }
+
+    .site-header {
+      position: relative;
+      z-index: 20;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--paper) 92%, transparent);
+    }
+
+    .nav {
+      min-height: 5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: .7rem;
+      text-decoration: none;
+      font-weight: 900;
+      letter-spacing: .08em;
+    }
+
+    .brand-mark {
+      width: 2rem;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border: 2px solid currentColor;
+      border-radius: 50%;
+      color: var(--violet);
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+    }
+
+    .theme-toggle {
+      min-width: 2.8rem;
+      min-height: 2.8rem;
+      display: inline-grid;
+      place-items: center;
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      background: var(--paper-2);
+      color: var(--ink);
+      cursor: pointer;
+      transition: transform .2s ease, background-color .2s ease;
+    }
+
+    .theme-toggle:hover { transform: rotate(8deg); }
+
+    .theme-glyph {
+      width: 1rem;
+      height: 1rem;
+      border: 2px solid currentColor;
+      border-radius: 50%;
+      box-shadow: .35rem -.3rem 0 -.16rem var(--paper-2), .35rem -.3rem 0 0 currentColor;
+    }
+
+    .button {
+      min-height: 3.15rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .65rem;
+      padding: .72rem 1.25rem;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--ink);
+      color: var(--paper-2);
+      font-weight: 850;
+      letter-spacing: -.01em;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 4px 4px 0 var(--signal);
+      transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease;
+    }
+
+    .button:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 7px 7px 0 var(--signal);
+    }
+
+    .button:active {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 var(--signal);
+    }
+
+    .button.small {
+      min-height: 2.75rem;
+      padding: .55rem 1rem;
+      box-shadow: none;
+    }
+
+    .button.secondary {
+      background: var(--violet);
+      color: #fff;
+      border-color: var(--violet-deep);
+    }
+
+    .hero {
+      position: relative;
+      isolation: isolate;
+      padding: clamp(4rem, 8vw, 8.5rem) 0 clamp(4.8rem, 9vw, 8rem);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      top: 0;
+      right: -10vw;
+      width: 42vw;
+      height: 100%;
+      border-left: 1px solid var(--line);
+      background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 42px 42px;
+      opacity: .26;
+      mask-image: linear-gradient(to left, black 30%, transparent 96%);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(360px, .9fr);
+      gap: clamp(2.5rem, 7vw, 7rem);
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+      margin-bottom: 1.35rem;
+      color: var(--violet-deep);
+      font-size: .77rem;
+      font-weight: 900;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 2rem;
+      height: 3px;
+      background: currentColor;
+    }
+
+    html[data-theme="dark"] .eyebrow { color: var(--violet); }
+
+    @media (prefers-color-scheme: dark) {
+      html:not([data-theme="light"]) .eyebrow { color: var(--violet); }
+    }
+
+    .product-line {
+      margin-bottom: 1.25rem;
+      color: var(--muted);
+      font-weight: 750;
+    }
+
+    .hero h1 {
+      max-width: 13ch;
+      margin-bottom: 1.65rem;
+      font-family: var(--serif);
+      font-size: clamp(3.5rem, 7vw, 7.2rem);
+      font-weight: 500;
+      line-height: .91;
+      letter-spacing: -.065em;
+    }
+
+    .hero h1 span { display: block; }
+    .hero h1 .some { color: var(--muted); }
+
+    .hero h1 .answer {
+      position: relative;
+      width: fit-content;
+      color: var(--violet-deep);
+      font-family: var(--sans);
+      font-size: .59em;
+      font-weight: 900;
+      line-height: 1.02;
+      letter-spacing: -.055em;
+    }
+
+    .hero h1 .answer::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      left: -.05em;
+      right: -.06em;
+      bottom: .02em;
+      height: .29em;
+      background: var(--signal);
+      transform: rotate(-1deg);
+    }
+
+    html[data-theme="dark"] .hero h1 .answer { color: var(--violet); }
+
+    @media (prefers-color-scheme: dark) {
+      html:not([data-theme="light"]) .hero h1 .answer { color: var(--violet); }
+    }
+
+    .hero-copy {
+      max-width: 58ch;
+      margin-bottom: 1.75rem;
+      font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+      color: var(--muted);
+    }
+
+    .hero-copy strong { color: var(--ink); }
+
+    .purchase-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem 1.25rem;
+    }
+
+    .price-lockup {
+      display: grid;
+      line-height: 1.05;
+    }
+
+    .price-lockup small {
+      margin-bottom: .25rem;
+      color: var(--muted);
+      font-size: .72rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .price-lockup strong {
+      font-family: var(--serif);
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+
+    .review-line {
+      margin-top: 1rem;
+      color: var(--muted);
+      font-size: .82rem;
+    }
+
+    .review-line .dot { padding-inline: .35rem; }
+
+    .diagnostic-card {
+      position: relative;
+      padding: 1rem;
+      border: 2px solid var(--line-strong);
+      border-radius: var(--radius-lg);
+      background: var(--paper-2);
+      box-shadow: var(--shadow);
+      transform: rotate(1.2deg);
+    }
+
+    .diagnostic-card::before {
+      content: "Mostly useful";
+      position: absolute;
+      z-index: 2;
+      top: -1rem;
+      right: 1.4rem;
+      padding: .4rem .8rem;
+      border: 2px solid var(--ink);
+      background: var(--signal);
+      color: #16171a;
+      font-size: .72rem;
+      font-weight: 900;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      transform: rotate(-3deg);
+    }
+
+    .diagnostic-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: .4rem .35rem .9rem;
+      border-bottom: 1px solid var(--line);
+      font-size: .72rem;
+      font-weight: 850;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .pulse {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      color: var(--good);
+    }
+
+    .pulse::before {
+      content: "";
+      width: .55rem;
+      height: .55rem;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 0 .25rem var(--good-soft);
+    }
+
+    .workflow-stack {
+      position: relative;
+      display: grid;
+      gap: .65rem;
+      padding: 1.1rem .2rem .35rem;
+      overflow: hidden;
+    }
+
+    .workflow-stack::after {
+      content: "";
+      position: absolute;
+      z-index: 3;
+      top: -15%;
+      left: -10%;
+      width: 120%;
+      height: 2px;
+      background: var(--violet);
+      box-shadow: 0 0 0 1px var(--paper-2), 0 0 16px 5px color-mix(in srgb, var(--violet) 35%, transparent);
+      animation: scan 4.8s ease-in-out infinite;
+    }
+
+    @keyframes scan {
+      0%, 9% { transform: translateY(0); opacity: 0; }
+      16% { opacity: 1; }
+      72% { opacity: 1; }
+      84%, 100% { transform: translateY(19rem); opacity: 0; }
+    }
+
+    .flow-block {
+      position: relative;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: .75rem;
+      min-height: 3.25rem;
+      padding: .68rem .8rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--paper);
+    }
+
+    .flow-block strong { font-size: .88rem; }
+
+    .flow-block small {
+      color: var(--muted);
+      font-size: .68rem;
+      font-weight: 750;
+    }
+
+    .flow-number {
+      width: 1.55rem;
+      height: 1.55rem;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line-strong);
+      border-radius: 50%;
+      font-size: .66rem;
+      font-weight: 900;
+    }
+
+    .flow-block.friction {
+      border: 2px dashed var(--coral);
+      background: color-mix(in srgb, var(--coral) 9%, var(--paper-2));
+    }
+
+    .flow-block.friction::before {
+      content: "Duplicated loop";
+      position: absolute;
+      top: -.6rem;
+      right: .65rem;
+      padding: .15rem .45rem;
+      background: var(--coral);
+      color: #fff;
+      font-size: .58rem;
+      font-weight: 900;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .status-ok, .status-check {
+      padding: .18rem .4rem;
+      border-radius: 999px;
+      font-size: .58rem;
+      font-weight: 900;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .status-ok { background: var(--good-soft); color: var(--good); }
+    .status-check { background: var(--signal-soft); color: var(--ink); }
+
+    .diagnostic-note {
+      margin: .95rem .2rem .15rem;
+      padding: .8rem .9rem;
+      border-left: 4px solid var(--violet);
+      background: var(--violet-soft);
+      font-size: .82rem;
+      font-weight: 750;
+    }
+
+    .trust-strip {
+      border-bottom: 1px solid var(--line);
+      background: var(--ink);
+      color: var(--paper-2);
+    }
+
+    .trust-strip .shell {
+      min-height: 4.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .8rem 2.4rem;
+      flex-wrap: wrap;
+      padding-block: .8rem;
+      text-align: center;
+      font-size: .84rem;
+      font-weight: 800;
+    }
+
+    .trust-strip strong { color: var(--signal); }
+
+    section { padding: clamp(4.5rem, 9vw, 8.5rem) 0; }
+
+    .section-tag {
+      margin-bottom: .9rem;
+      color: var(--violet-deep);
+      font-size: .74rem;
+      font-weight: 900;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    html[data-theme="dark"] .section-tag { color: var(--violet); }
+
+    @media (prefers-color-scheme: dark) {
+      html:not([data-theme="light"]) .section-tag { color: var(--violet); }
+    }
+
+    .section-heading {
+      max-width: 16ch;
+      margin-bottom: 1.2rem;
+      font-family: var(--serif);
+      font-size: clamp(2.6rem, 5.5vw, 5.5rem);
+      font-weight: 500;
+      line-height: .98;
+      letter-spacing: -.055em;
+    }
+
+    .section-lede {
+      max-width: 64ch;
+      color: var(--muted);
+      font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+    }
+
+    .problem {
+      position: relative;
+      background: var(--paper-2);
+    }
+
+    .problem-grid {
+      display: grid;
+      grid-template-columns: .8fr 1.2fr;
+      gap: clamp(2rem, 7vw, 7rem);
+      align-items: start;
+    }
+
+    .problem-title {
+      position: sticky;
+      top: 2rem;
+    }
+
+    .problem-title h2 {
+      margin-bottom: 1rem;
+      font-family: var(--serif);
+      font-size: clamp(3rem, 5.5vw, 6rem);
+      font-weight: 500;
+      line-height: .93;
+      letter-spacing: -.06em;
+    }
+
+    .problem-title h2 .yet {
+      display: inline-block;
+      color: var(--violet-deep);
+      font-family: var(--sans);
+      font-size: .55em;
+      font-weight: 900;
+      transform: rotate(-3deg);
+    }
+
+    html[data-theme="dark"] .problem-title h2 .yet { color: var(--violet); }
+
+    @media (prefers-color-scheme: dark) {
+      html:not([data-theme="light"]) .problem-title h2 .yet { color: var(--violet); }
+    }
+
+    .growth-list {
+      counter-reset: growth;
+      display: grid;
+      gap: .7rem;
+      margin: 0 0 2rem;
+      padding: 0;
+      list-style: none;
+    }
+
+    .growth-list li {
+      counter-increment: growth;
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      padding: 1.1rem 1.2rem;
+      border-bottom: 1px solid var(--line);
+      font-family: var(--serif);
+      font-size: clamp(1.4rem, 2.7vw, 2.5rem);
+      line-height: 1.1;
+    }
+
+    .growth-list li::before {
+      content: "0" counter(growth);
+      color: var(--violet);
+      font-family: var(--sans);
+      font-size: .7rem;
+      font-weight: 900;
+      letter-spacing: .1em;
+    }
+
+    .problem-landing {
+      padding: 1.4rem;
+      border: 2px solid var(--ink);
+      border-radius: var(--radius);
+      background: var(--signal);
+      color: #16171a;
+      font-weight: 850;
+    }
+
+    .problem-landing span {
+      display: block;
+      margin-top: .3rem;
+      font-family: var(--serif);
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      font-weight: 600;
+      line-height: 1.05;
+    }
+
+    .demo { border-block: 1px solid var(--line); }
+
+    .demo-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .demo-head .section-heading { margin-bottom: 0; }
+    .demo-head p { max-width: 35rem; margin-bottom: .4rem; color: var(--muted); }
+
+    .before-after {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 11rem minmax(0, 1fr);
+      gap: 1rem;
+      align-items: stretch;
+    }
+
+    .flow-panel {
+      padding: clamp(1rem, 2.5vw, 1.6rem);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--paper-2);
+    }
+
+    .flow-panel h3 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      font-size: .75rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .flow-panel h3 span {
+      color: var(--muted);
+      font-size: .64rem;
+      letter-spacing: .03em;
+      text-transform: none;
+    }
+
+    .demo-blocks {
+      display: grid;
+      gap: .7rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .demo-blocks li {
+      position: relative;
+      min-height: 4.35rem;
+      display: grid;
+      grid-template-columns: 2rem 1fr;
+      align-items: center;
+      gap: .8rem;
+      padding: .7rem .85rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--paper);
+      font-size: .82rem;
+      font-weight: 800;
+    }
+
+    .demo-blocks li::before {
+      content: attr(data-step);
+      width: 1.8rem;
+      height: 1.8rem;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line-strong);
+      border-radius: .45rem;
+      font-size: .62rem;
+    }
+
+    .demo-blocks li small {
+      display: block;
+      color: var(--muted);
+      font-size: .68rem;
+      font-weight: 600;
+    }
+
+    .demo-blocks .issue {
+      border: 2px dashed var(--coral);
+      background: color-mix(in srgb, var(--coral) 8%, var(--paper));
+    }
+
+    .demo-blocks .issue::after {
+      content: "Unclear hand-off";
+      position: absolute;
+      right: .5rem;
+      top: -.55rem;
+      padding: .15rem .45rem;
+      background: var(--coral);
+      color: #fff;
+      font-size: .55rem;
+      font-weight: 900;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .demo-blocks .refined {
+      border: 2px solid var(--good);
+      background: var(--good-soft);
+    }
+
+    .demo-blocks .refined::after {
+      content: "Clarified";
+      position: absolute;
+      right: .5rem;
+      top: -.55rem;
+      padding: .15rem .45rem;
+      background: var(--good);
+      color: var(--paper-2);
+      font-size: .55rem;
+      font-weight: 900;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .aster-route {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .45rem;
+      padding: 1rem .5rem;
+    }
+
+    .aster-route::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      top: 8%;
+      bottom: 8%;
+      left: 50%;
+      border-left: 2px dashed var(--line);
+    }
+
+    .aster-route strong {
+      width: 4.2rem;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      margin-bottom: .65rem;
+      border: 2px solid var(--ink);
+      border-radius: 50%;
+      background: var(--violet);
+      color: #fff;
+      font-family: var(--serif);
+      font-size: 2rem;
+      box-shadow: 4px 4px 0 var(--signal);
+    }
+
+    .aster-route span {
+      min-width: 6.6rem;
+      padding: .3rem .55rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper-2);
+      text-align: center;
+      font-size: .61rem;
+      font-weight: 900;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .demo-caption {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 2rem;
+      padding: 1.2rem 1.35rem;
+      border: 2px solid var(--ink);
+      border-radius: var(--radius);
+      background: var(--paper-2);
+    }
+
+    .demo-caption p { margin: 0; font-weight: 850; }
+    .demo-caption p strong { color: var(--violet-deep); }
+
+    html[data-theme="dark"] .demo-caption p strong { color: var(--violet); }
+
+    @media (prefers-color-scheme: dark) {
+      html:not([data-theme="light"]) .demo-caption p strong { color: var(--violet); }
+    }
+
+    .uses { background: var(--ink); color: var(--paper-2); }
+
+    .uses .section-tag { color: var(--signal); }
+    .uses .section-lede { color: color-mix(in srgb, var(--paper-2) 70%, transparent); }
+
+    .use-list {
+      counter-reset: use;
+      margin: 3.5rem 0 0;
+      padding: 0;
+      list-style: none;
+      border-top: 1px solid color-mix(in srgb, var(--paper-2) 28%, transparent);
+    }
+
+    .use-list li {
+      counter-increment: use;
+      display: grid;
+      grid-template-columns: 5rem .65fr 1fr;
+      gap: 1.5rem;
+      align-items: baseline;
+      padding: 1.65rem .2rem;
+      border-bottom: 1px solid color-mix(in srgb, var(--paper-2) 28%, transparent);
+    }
+
+    .use-list li::before {
+      content: "0" counter(use);
+      color: var(--signal);
+      font-size: .7rem;
+      font-weight: 900;
+      letter-spacing: .12em;
+    }
+
+    .use-list h3 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 4.2rem);
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    .use-list p {
+      max-width: 48ch;
+      margin: 0;
+      color: color-mix(in srgb, var(--paper-2) 72%, transparent);
+    }
+
+    .diagnose { background: var(--paper-2); }
+
+    .diagnose-grid {
+      display: grid;
+      grid-template-columns: .82fr 1.18fr;
+      gap: clamp(2.5rem, 7vw, 7rem);
+      align-items: center;
+    }
+
+    .scope-map {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: .8rem;
+      padding: clamp(1rem, 3vw, 2rem);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-lg);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .scope-center {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      border: 2px solid var(--violet-deep);
+      border-radius: var(--radius);
+      background: var(--violet-soft);
+    }
+
+    .scope-center strong:first-child {
+      width: 3.4rem;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--violet-deep);
+      color: #fff;
+      font-family: var(--serif);
+      font-size: 1.6rem;
+    }
+
+    .scope-center span { display: block; color: var(--muted); font-size: .72rem; }
+
+    .scope-item {
+      min-height: 5.1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: .8rem .9rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--paper-2);
+      font-weight: 850;
+    }
+
+    .scope-item small {
+      color: var(--muted);
+      font-size: .64rem;
+      font-weight: 700;
+    }
+
+    .scope-item.active {
+      border: 2px dashed var(--coral);
+      color: var(--coral);
+    }
+
+    .mechanism { border-block: 1px solid var(--line); }
+
+    .mechanism-steps {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      margin-top: 3rem;
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .mechanism-step {
+      position: relative;
+      min-height: 13rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 1.2rem;
+      border-right: 1px solid var(--line);
+      background: var(--paper-2);
+    }
+
+    .mechanism-step:last-child { border-right: 0; }
+
+    .mechanism-step .letter {
+      color: var(--violet-deep);
+      font-family: var(--serif);
+      font-size: clamp(3.4rem, 6vw, 6rem);
+      line-height: .8;
+    }
+
+    html[data-theme="dark"] .mechanism-step .letter { color: var(--violet); }
+
+    @media (prefers-color-scheme: dark) {
+      html:not([data-theme="light"]) .mechanism-step .letter { color: var(--violet); }
+    }
+
+    .mechanism-step strong { display: block; font-size: 1.05rem; }
+    .mechanism-step small { color: var(--muted); font-size: .75rem; }
+
+    .aster-it {
+      width: fit-content;
+      margin: 2rem auto 0;
+      padding: .5rem 1rem;
+      border: 2px solid var(--ink);
+      background: var(--signal);
+      color: #16171a;
+      font-family: var(--serif);
+      font-size: clamp(2.1rem, 4vw, 4rem);
+      font-weight: 600;
+      line-height: 1;
+      transform: rotate(-1.5deg);
+    }
+
+    .simple { background: var(--paper-2); }
+
+    .simple-grid {
+      display: grid;
+      grid-template-columns: .78fr 1.22fr;
+      gap: clamp(2.5rem, 7vw, 7rem);
+      align-items: start;
+    }
+
+    .steps {
+      counter-reset: simple;
+      display: grid;
+      gap: 1rem;
+      margin: 2rem 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .steps li {
+      counter-increment: simple;
+      display: grid;
+      grid-template-columns: 2.7rem 1fr;
+      gap: 1rem;
+      align-items: start;
+      padding-bottom: 1.15rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .steps li::before {
+      content: counter(simple);
+      width: 2.5rem;
+      height: 2.5rem;
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--ink);
+      border-radius: 50%;
+      background: var(--signal);
+      color: #16171a;
+      font-weight: 900;
+    }
+
+    .steps strong { display: block; margin-bottom: .2rem; }
+    .steps span { color: var(--muted); font-size: .9rem; }
+
+    .prompt-stack { display: grid; gap: .8rem; }
+
+    details {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      overflow: hidden;
+    }
+
+    details[open] { border-color: var(--violet); }
+
+    summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      min-height: 4rem;
+      padding: 1rem 1.15rem;
+      cursor: pointer;
+      font-weight: 850;
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker { display: none; }
+
+    summary::after {
+      content: "+";
+      width: 1.7rem;
+      height: 1.7rem;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border: 1px solid var(--line-strong);
+      border-radius: 50%;
+      line-height: 1;
+    }
+
+    details[open] summary::after { content: "−"; }
+
+    .prompt-copy {
+      margin: 0;
+      padding: 1.1rem;
+      border-top: 1px solid var(--line);
+      background: var(--ink);
+      color: var(--paper-2);
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font: 600 .82rem/1.65 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .inputs {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 3rem;
+      align-items: stretch;
+    }
+
+    .input-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: .7rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .input-list li {
+      min-height: 5.2rem;
+      display: flex;
+      align-items: end;
+      padding: .85rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--paper-2);
+      font-weight: 800;
+    }
+
+    .failure-card {
+      position: relative;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: clamp(1.35rem, 3vw, 2.5rem);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-lg);
+      background: var(--signal);
+      color: #16171a;
+      box-shadow: 7px 7px 0 var(--ink);
+    }
+
+    .failure-card .label {
+      width: fit-content;
+      padding: .25rem .55rem;
+      border: 1px solid #16171a;
+      border-radius: 999px;
+      font-size: .65rem;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .failure-card h3 {
+      max-width: 12ch;
+      margin: 2rem 0 1rem;
+      font-family: var(--serif);
+      font-size: clamp(2.2rem, 4.5vw, 4.5rem);
+      font-weight: 600;
+      line-height: .95;
+      letter-spacing: -.04em;
+    }
+
+    .failure-card p { max-width: 48ch; margin-bottom: 0; font-weight: 720; }
+
+    .reason { background: var(--violet-deep); color: #fff; }
+
+    .reason .section-tag { color: var(--signal); }
+    .reason-grid {
+      display: grid;
+      grid-template-columns: .85fr 1.15fr;
+      gap: clamp(2.5rem, 7vw, 7rem);
+      align-items: center;
+    }
+
+    .reason-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      border-top: 1px solid rgba(255,255,255,.35);
+    }
+
+    .reason-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.1rem .2rem;
+      border-bottom: 1px solid rgba(255,255,255,.35);
+      font-size: clamp(1rem, 2vw, 1.4rem);
+      font-weight: 800;
+    }
+
+    .reason-list span:last-child {
+      color: var(--signal);
+      white-space: nowrap;
+    }
+
+    .reason-statement {
+      padding: clamp(1.3rem, 4vw, 3rem);
+      border: 2px solid #fff;
+      border-radius: var(--radius-lg);
+      background: #fff;
+      color: #16171a;
+      box-shadow: 8px 8px 0 var(--signal);
+      transform: rotate(1.1deg);
+    }
+
+    .reason-statement small {
+      display: block;
+      margin-bottom: 1rem;
+      font-weight: 900;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .reason-statement strong {
+      display: block;
+      font-family: var(--serif);
+      font-size: clamp(2.8rem, 5vw, 5.5rem);
+      font-weight: 600;
+      line-height: .95;
+      letter-spacing: -.05em;
+    }
+
+    .checks { background: var(--paper-2); }
+
+    .checks-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+      margin-top: 3rem;
+    }
+
+    .check-card {
+      padding: clamp(1.3rem, 3.5vw, 2.5rem);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--paper);
+    }
+
+    .check-icon {
+      width: 3.3rem;
+      height: 3.3rem;
+      display: grid;
+      place-items: center;
+      margin-bottom: 2rem;
+      border: 2px solid var(--ink);
+      border-radius: 50%;
+      background: var(--signal);
+      color: #16171a;
+      font-family: var(--serif);
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+
+    .check-card h3 {
+      max-width: 17ch;
+      margin-bottom: .9rem;
+      font-family: var(--serif);
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      font-weight: 600;
+      line-height: 1;
+      letter-spacing: -.035em;
+    }
+
+    .check-card > p { color: var(--muted); }
+
+    .retained {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .45rem;
+      margin-top: 1.4rem;
+    }
+
+    .retained span {
+      padding: .35rem .65rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper-2);
+      font-size: .68rem;
+      font-weight: 800;
+    }
+
+    .retained span::before { content: "✓ "; color: var(--good); }
+
+    .product {
+      position: relative;
+      overflow: hidden;
+      border-block: 1px solid var(--line);
+    }
+
+    .product::after {
+      content: "ASTER";
+      position: absolute;
+      z-index: -1;
+      right: -2vw;
+      bottom: -4vw;
+      color: color-mix(in srgb, var(--violet) 8%, transparent);
+      font-family: var(--serif);
+      font-size: clamp(9rem, 24vw, 25rem);
+      font-weight: 700;
+      line-height: .7;
+      letter-spacing: -.08em;
+      pointer-events: none;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: .75fr 1.25fr;
+      gap: clamp(2.5rem, 7vw, 7rem);
+      align-items: center;
+    }
+
+    .package {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .package-item {
+      display: grid;
+      grid-template-columns: 3.2rem 1fr;
+      gap: 1rem;
+      align-items: start;
+      padding: 1.25rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper-2);
+      box-shadow: 4px 4px 0 var(--line);
+    }
+
+    .package-item .package-mark {
+      width: 3rem;
+      height: 3.7rem;
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--ink);
+      border-radius: .3rem;
+      background: var(--violet-soft);
+      color: var(--violet-deep);
+      font-family: var(--serif);
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+
+    html[data-theme="dark"] .package-item .package-mark { color: var(--violet); }
+
+    @media (prefers-color-scheme: dark) {
+      html:not([data-theme="light"]) .package-item .package-mark { color: var(--violet); }
+    }
+
+    .package-item h3 { margin-bottom: .25rem; }
+    .package-item p { margin-bottom: 0; color: var(--muted); font-size: .9rem; }
+
+    .compatibility {
+      margin-top: 1.3rem;
+      padding: 1.15rem;
+      border-left: 4px solid var(--signal);
+      background: var(--paper-2);
+      color: var(--muted);
+      font-size: .83rem;
+    }
+
+    .compatibility strong { color: var(--ink); }
+
+    .product-buy {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1.6rem;
+    }
+
+    .finale {
+      position: relative;
+      padding-block: clamp(5rem, 12vw, 10rem);
+      background: var(--ink);
+      color: var(--paper-2);
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .finale::before, .finale::after {
+      content: "";
+      position: absolute;
+      width: 17rem;
+      height: 17rem;
+      border: 1px solid color-mix(in srgb, var(--paper-2) 25%, transparent);
+      border-radius: 50%;
+    }
+
+    .finale::before { top: -8rem; left: -6rem; }
+    .finale::after { right: -6rem; bottom: -8rem; }
+
+    .finale .section-tag { color: var(--signal); }
+
+    .finale h2 {
+      margin-bottom: 2.2rem;
+      font-family: var(--serif);
+      font-size: clamp(3.1rem, 7vw, 7rem);
+      font-weight: 500;
+      line-height: .9;
+      letter-spacing: -.06em;
+    }
+
+    .acronym {
+      max-width: 46rem;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      margin: 0 auto 2.3rem;
+      border: 1px solid color-mix(in srgb, var(--paper-2) 35%, transparent);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .acronym div {
+      min-height: 8rem;
+      display: grid;
+      align-content: center;
+      gap: .2rem;
+      border-right: 1px solid color-mix(in srgb, var(--paper-2) 35%, transparent);
+    }
+
+    .acronym div:last-child { border-right: 0; }
+
+    .acronym strong {
+      color: var(--signal);
+      font-family: var(--serif);
+      font-size: 3rem;
+      line-height: 1;
+    }
+
+    .acronym span { font-size: .72rem; font-weight: 800; }
+
+    .finale-call {
+      margin-bottom: 2rem;
+      font-family: var(--serif);
+      font-size: clamp(2.3rem, 5vw, 5rem);
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .finale .button {
+      background: var(--signal);
+      color: #16171a;
+      border-color: #fff;
+      box-shadow: 5px 5px 0 #fff;
+    }
+
+    .final-price {
+      display: block;
+      margin-top: 1.1rem;
+      color: color-mix(in srgb, var(--paper-2) 72%, transparent);
+      font-size: .84rem;
+    }
+
+    footer {
+      padding: 1.5rem 0;
+      border-top: 1px solid color-mix(in srgb, var(--paper-2) 20%, transparent);
+      background: var(--ink);
+      color: color-mix(in srgb, var(--paper-2) 62%, transparent);
+      font-size: .76rem;
+    }
+
+    footer .shell {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .reveal {
+      opacity: 1;
+      transform: none;
+    }
+
+    .js .reveal {
+      opacity: 0;
+      transform: translateY(1.4rem);
+      transition: opacity .65s ease, transform .65s ease;
+    }
+
+    .js .reveal.seen {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 960px) {
+      .hero-grid, .problem-grid, .diagnose-grid, .simple-grid, .reason-grid, .product-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 { max-width: 11ch; }
+      .hero-grid { gap: 4rem; }
+      .diagnostic-card { width: min(100%, 38rem); margin-inline: auto; }
+      .problem-title { position: static; }
+      .problem-title h2 { max-width: 10ch; }
+      .demo-head { display: block; }
+      .demo-head p { margin-top: 1rem; }
+      .before-after { grid-template-columns: 1fr; }
+      .aster-route {
+        min-height: 6.5rem;
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+      .aster-route::before {
+        top: 50%;
+        bottom: auto;
+        left: 7%;
+        right: 7%;
+        border-left: 0;
+        border-top: 2px dashed var(--line);
+      }
+      .aster-route strong { margin: 0 .35rem 0 0; }
+      .aster-route span { min-width: auto; }
+      .mechanism-steps { grid-template-columns: repeat(5, minmax(8.5rem, 1fr)); overflow-x: auto; }
+      .mechanism-step { min-height: 11rem; }
+      .product-grid > div:first-child { max-width: 42rem; }
+    }
+
+    @media (max-width: 720px) {
+      .shell { width: min(100% - 2rem, var(--max)); }
+      .nav { min-height: 4.4rem; }
+      .nav .button.small { display: none; }
+      .hero { padding-top: 3.6rem; }
+      .hero::before { width: 65vw; right: -20vw; }
+      .hero h1 { font-size: clamp(3.35rem, 16vw, 5rem); }
+      .hero h1 .answer { font-size: .55em; }
+      .purchase-row { align-items: stretch; }
+      .purchase-row .button { flex: 1 1 12rem; }
+      .price-lockup { flex: 0 0 auto; }
+      .diagnostic-card { padding: .75rem; transform: none; }
+      .flow-block { grid-template-columns: auto 1fr; }
+      .flow-block > span:last-child { grid-column: 2; justify-self: start; }
+      section { padding-block: 4.4rem; }
+      .section-heading { font-size: clamp(2.7rem, 13vw, 4.4rem); }
+      .growth-list li { padding-inline: .2rem; }
+      .demo-caption { align-items: stretch; flex-direction: column; }
+      .demo-caption .button { width: 100%; }
+      .use-list li {
+        grid-template-columns: 2.5rem 1fr;
+        gap: .8rem;
+      }
+      .use-list p { grid-column: 2; }
+      .scope-map { grid-template-columns: 1fr; }
+      .scope-center { grid-column: auto; }
+      .mechanism-steps {
+        grid-template-columns: 1fr;
+        overflow: hidden;
+      }
+      .mechanism-step {
+        min-height: auto;
+        display: grid;
+        grid-template-columns: 4rem 1fr;
+        gap: .2rem 1rem;
+        align-items: center;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .mechanism-step:last-child { border-bottom: 0; }
+      .mechanism-step .letter { grid-row: 1 / 3; font-size: 3.3rem; }
+      .input-grid, .checks-grid { grid-template-columns: 1fr; }
+      .failure-card { min-height: 25rem; }
+      .acronym {
+        grid-template-columns: 1fr;
+        max-width: 24rem;
+      }
+      .acronym div {
+        min-height: 4.5rem;
+        grid-template-columns: 3rem 1fr;
+        align-items: center;
+        text-align: left;
+        padding: .5rem 1rem;
+        border-right: 0;
+        border-bottom: 1px solid color-mix(in srgb, var(--paper-2) 35%, transparent);
+      }
+      .acronym div:last-child { border-bottom: 0; }
+      .acronym strong { font-size: 2.2rem; }
+      footer .shell { align-items: flex-start; flex-direction: column; }
+    }
+
+    @media (max-width: 430px) {
+      .hero h1 { font-size: 3.4rem; }
+      .purchase-row { flex-direction: column; }
+      .price-lockup { display: flex; align-items: baseline; gap: .55rem; }
+      .diagnostic-top { align-items: flex-start; flex-direction: column; gap: .35rem; }
+      .flow-block strong { font-size: .8rem; }
+      .aster-route { align-items: center; flex-direction: column; flex-wrap: nowrap; }
+      .aster-route::before { top: 7%; bottom: 7%; left: 50%; right: auto; border-top: 0; border-left: 2px dashed var(--line); }
+      .aster-route strong { margin: 0 0 .35rem; }
+      .input-list { grid-template-columns: 1fr; }
+      .package-item { grid-template-columns: 1fr; }
+      .product-buy { align-items: stretch; flex-direction: column; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+      .js .reveal { opacity: 1; transform: none; }
+      .workflow-stack::after { display: none; }
+    }
+  </style>
+</head>
+<body id="top">
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header class="site-header">
+    <nav class="nav shell" aria-label="Primary navigation">
+      <a class="brand" href="#top" aria-label="ASTER home">
+        <span class="brand-mark" aria-hidden="true">A</span>
+        <span>ASTER</span>
+      </a>
+      <div class="nav-actions">
+        <button class="theme-toggle" type="button" aria-label="Use dark mode" aria-pressed="false">
+          <span class="theme-glyph" aria-hidden="true"></span>
+        </button>
+        <a class="button small" href="https://nundrian.gumroad.com/l/bepfhw">Get ASTER</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="shell hero-grid">
+        <div>
+          <p class="eyebrow"><span>ASTER</span> 1.0</p>
+          <p class="product-line">Prompt &amp; workflow optimisation.</p>
+          <h1 id="hero-title">
+            <span>It’s probably fine…</span>
+            <span class="some">Some of it…</span>
+            <span class="answer">ASTER works out what isn’t.</span>
+          </h1>
+          <p class="hero-copy">A prompt or workflow can work well and still have something getting in the way. <strong>ASTER looks at what you already have, what you want from it and where the useful changes are.</strong> It doesn’t assume the answer is to rewrite everything.</p>
+          <div class="purchase-row">
+            <a class="button" href="https://nundrian.gumroad.com/l/bepfhw">Get ASTER <span aria-hidden="true">→</span></a>
+            <span class="price-lockup">
+              <small>Reusable workflow package</small>
+              <strong>€14.99</strong>
+            </span>
+          </div>
+          <p class="review-line">Purchase and download securely via Gumroad.</p>
+        </div>
+
+        <div class="diagnostic-card" aria-label="Illustration showing ASTER examining a mostly useful workflow and finding one duplicated loop">
+          <div class="diagnostic-top">
+            <span>Workflow examination</span>
+            <span class="pulse">Scan active</span>
+          </div>
+          <div class="workflow-stack">
+            <div class="flow-block">
+              <span class="flow-number">01</span>
+              <span><strong>Keep the original job</strong><small>Purpose is clear</small></span>
+              <span class="status-ok">Useful</span>
+            </div>
+            <div class="flow-block">
+              <span class="flow-number">02</span>
+              <span><strong>Use the supplied evidence</strong><small>Constraint is needed</small></span>
+              <span class="status-ok">Useful</span>
+            </div>
+            <div class="flow-block friction">
+              <span class="flow-number">03</span>
+              <span><strong>Repeat the same review</strong><small>Creates delay without a new decision</small></span>
+              <span class="status-check">Check</span>
+            </div>
+            <div class="flow-block">
+              <span class="flow-number">04</span>
+              <span><strong>Return the required format</strong><small>Output must survive</small></span>
+              <span class="status-ok">Useful</span>
+            </div>
+          </div>
+          <p class="diagnostic-note">Three parts stay. One part needs a reason to change.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="trust-strip" aria-label="Product summary">
+      <div class="shell">
+        <span><strong>Not another AI model.</strong></span>
+        <span>A reusable workflow for the AI you already use.</span>
+        <span>Diagnose first. Change with purpose. Check the result.</span>
+      </div>
+    </div>
+
+    <section class="problem" aria-labelledby="problem-title">
+      <div class="shell problem-grid">
+        <div class="problem-title reveal">
+          <p class="section-tag">Before adding something else</p>
+          <h2 id="problem-title">Don’t fix it. <span class="yet">Yet…</span></h2>
+          <p class="section-lede">First find out what to fix first.</p>
+        </div>
+        <div class="reveal">
+          <p class="section-lede">Workflows have a habit of growing:</p>
+          <ol class="growth-list">
+            <li>another instruction;</li>
+            <li>another stage;</li>
+            <li>another workaround;</li>
+            <li>another instruction to compensate for the workaround.</li>
+          </ol>
+          <div class="problem-landing">The message isn’t “your workflow is bad.”<span>It’s: find out what actually needs changing.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo" aria-labelledby="demo-title">
+      <div class="shell">
+        <div class="demo-head reveal">
+          <div>
+            <p class="section-tag">See the difference</p>
+            <h2 class="section-heading" id="demo-title">Most of it was fine.</h2>
+          </div>
+          <p>ASTER examines the same workflow before and after. The useful parts remain visible; only the hand-off that needed attention changes.</p>
+        </div>
+
+        <div class="before-after reveal" aria-label="Before and after workflow demonstration">
+          <article class="flow-panel">
+            <h3>Before <span>4 useful parts · 1 weak hand-off</span></h3>
+            <ol class="demo-blocks">
+              <li data-step="01">Define the job<small>Clear and relevant</small></li>
+              <li data-step="02">Use the source material<small>Needed evidence rule</small></li>
+              <li class="issue" data-step="03">Pass it to the next stage<small>What gets passed is unclear</small></li>
+              <li data-step="04">Check fixed requirements<small>Prevents task drift</small></li>
+              <li data-step="05">Return the final format<small>Required output</small></li>
+            </ol>
+          </article>
+
+          <div class="aster-route" aria-label="ASTER stages">
+            <strong aria-hidden="true">A</strong>
+            <span>Assess</span>
+            <span>Scope</span>
+            <span>Triage</span>
+            <span>Evaluate</span>
+            <span>Refine</span>
+          </div>
+
+          <article class="flow-panel">
+            <h3>After <span>4 preserved · 1 clarified</span></h3>
+            <ol class="demo-blocks">
+              <li data-step="01">Define the job<small>Unchanged</small></li>
+              <li data-step="02">Use the source material<small>Unchanged</small></li>
+              <li class="refined" data-step="03">Pass the draft and evidence notes<small>The next stage now has what it needs</small></li>
+              <li data-step="04">Check fixed requirements<small>Unchanged</small></li>
+              <li data-step="05">Return the final format<small>Unchanged</small></li>
+            </ol>
+          </article>
+        </div>
+
+        <div class="demo-caption reveal">
+          <p><strong>ASTER found what wasn’t.</strong> It didn’t replace what was already doing a useful job.</p>
+          <a class="button secondary" href="https://nundrian.gumroad.com/l/bepfhw">Get ASTER</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="uses" aria-labelledby="uses-title">
+      <div class="shell">
+        <div class="reveal">
+          <p class="section-tag">Five useful jobs</p>
+          <h2 class="section-heading" id="uses-title">Give your AI a better way to work.</h2>
+          <p class="section-lede">ASTER can work with something established, something that failed, something that grew too large or something that doesn’t exist yet.</p>
+        </div>
+        <ol class="use-list reveal">
+          <li><h3>Improve</h3><p>Improve something that already works. Preserve the useful parts and strengthen the weak ones.</p></li>
+          <li><h3>Investigate</h3><p>Use the workflow, its input and the failed result to work back towards the likely cause instead of rewriting whatever looks suspicious.</p></li>
+          <li><h3>Simplify</h3><p>Look at what is genuinely needed and remove complexity that is no longer helping.</p></li>
+          <li><h3>Create</h3><p>Start with the job, what matters and what must remain fixed. Build the workflow around what the AI actually needs to accomplish.</p></li>
+          <li><h3>Merge</h3><p>Take useful, compatible parts from different workflows and create a coherent hybrid—even when those workflows perform different jobs.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="diagnose" aria-labelledby="diagnose-title">
+      <div class="shell diagnose-grid">
+        <div class="reveal">
+          <p class="section-tag">It can look beyond the words</p>
+          <h2 class="section-heading" id="diagnose-title">Not every prompt problem is actually a prompt problem.</h2>
+          <p class="section-lede">ASTER looks across the whole route before deciding where intervention belongs. Sometimes the wording is fine and the real friction sits somewhere else.</p>
+        </div>
+        <div class="scope-map reveal" aria-label="Areas ASTER can examine">
+          <div class="scope-center"><strong aria-hidden="true">A</strong><strong>Look first. Choose where to act.<span>The source of the problem is not assumed.</span></strong></div>
+          <div class="scope-item"><small>01</small>Wording</div>
+          <div class="scope-item"><small>02</small>Structure</div>
+          <div class="scope-item"><small>03</small>Context</div>
+          <div class="scope-item"><small>04</small>Tools</div>
+          <div class="scope-item"><small>05</small>Model</div>
+          <div class="scope-item active"><small>06 · example finding</small>Hand-off</div>
+          <div class="scope-item"><small>07</small>Checking</div>
+          <div class="scope-item"><small>08</small>Instructions</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mechanism" aria-labelledby="mechanism-title">
+      <div class="shell">
+        <div class="reveal">
+          <p class="section-tag">How ASTER works</p>
+          <h2 class="section-heading" id="mechanism-title">Five stages. One memorable route.</h2>
+          <p class="section-lede">Enough structure to guide the work, without turning every job into a technical exercise.</p>
+        </div>
+        <div class="mechanism-steps reveal">
+          <div class="mechanism-step"><span class="letter">A</span><span><strong>Assess it.</strong><small>Understand what exists.</small></span></div>
+          <div class="mechanism-step"><span class="letter">S</span><span><strong>Scope it.</strong><small>Fix the real job and boundaries.</small></span></div>
+          <div class="mechanism-step"><span class="letter">T</span><span><strong>Triage it.</strong><small>Find where attention belongs.</small></span></div>
+          <div class="mechanism-step"><span class="letter">E</span><span><strong>Evaluate it.</strong><small>Test the useful options.</small></span></div>
+          <div class="mechanism-step"><span class="letter">R</span><span><strong>Refine it.</strong><small>Make and check the change.</small></span></div>
+        </div>
+        <p class="aster-it reveal">ASTER it.</p>
+      </div>
+    </section>
+
+    <section class="simple" aria-labelledby="simple-title">
+      <div class="shell simple-grid">
+        <div class="reveal">
+          <p class="section-tag">Using ASTER is simple</p>
+          <h2 class="section-heading" id="simple-title">Upload it. Point it at the job.</h2>
+          <ol class="steps">
+            <li><span><strong>Upload the ASTER ZIP</strong><span>Include the prompt, workflow or material you want it to work with.</span></span></li>
+            <li><span><strong>Tell the AI what to read</strong><span>Ask it to read <code>00_READ_FIRST.md</code> and follow the instructions.</span></span></li>
+            <li><span><strong>Say what you want done</strong><span>Improve, investigate, simplify, create or merge.</span></span></li>
+          </ol>
+        </div>
+
+        <div class="prompt-stack reveal" aria-label="Example ways to use ASTER">
+          <details open>
+            <summary>Improve a workflow</summary>
+            <pre class="prompt-copy"><code>Read 00_READ_FIRST.md in the ZIP and follow its instructions. I also want you to improve this workflow. It already works well, but I want it to be more reliable and easier to use.</code></pre>
+          </details>
+          <details>
+            <summary>Merge two different workflows</summary>
+            <pre class="prompt-copy"><code>Read 00_READ_FIRST.md in the ZIP and follow its instructions. I also want you to take the best parts of these two workflows, merge them into one and optimise the result.</code></pre>
+          </details>
+          <details>
+            <summary>Investigate a failed result</summary>
+            <pre class="prompt-copy"><code>Read 00_READ_FIRST.md in the ZIP and follow its instructions. I also want you to find out why this workflow produced the attached result and fix the cause.</code></pre>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="inputs" aria-labelledby="inputs-title">
+      <div class="shell">
+        <div class="reveal">
+          <p class="section-tag">Give it something useful to work with</p>
+          <h2 class="section-heading" id="inputs-title">Evidence beats guesswork.</h2>
+          <p class="section-lede">ASTER can work with what you have—not just a polished prompt.</p>
+        </div>
+        <div class="input-grid">
+          <ul class="input-list reveal">
+            <li>An existing prompt</li>
+            <li>An existing workflow</li>
+            <li>An older version</li>
+            <li>An example that worked</li>
+            <li>Fixed requirements</li>
+            <li>Documentation</li>
+            <li>Research</li>
+            <li>Previous-attempt notes</li>
+          </ul>
+          <article class="failure-card reveal">
+            <span class="label">Especially useful</span>
+            <div>
+              <h3>A failed result.</h3>
+              <p>A useful failure gives ASTER something real to trace. It can compare the workflow, the input and what came out instead of guessing where the problem might be.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="reason" aria-labelledby="reason-title">
+      <div class="shell reason-grid">
+        <div class="reveal">
+          <p class="section-tag">Purposeful change</p>
+          <h2 class="section-heading" id="reason-title">More isn’t automatically better.</h2>
+          <ul class="reason-list">
+            <li><span>More instructions</span><span>≠ better</span></li>
+            <li><span>Another agent</span><span>≠ better</span></li>
+            <li><span>Another reasoning round</span><span>≠ better</span></li>
+            <li><span>Making it shorter</span><span>≠ better</span></li>
+          </ul>
+        </div>
+        <div class="reason-statement reveal">
+          <small>ASTER’s rule</small>
+          <strong>The change needs a reason.</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="checks" aria-labelledby="checks-title">
+      <div class="shell">
+        <div class="reveal">
+          <p class="section-tag">Use tools when they can change the decision</p>
+          <h2 class="section-heading" id="checks-title">Research selectively. Check relentlessly.</h2>
+        </div>
+        <div class="checks-grid">
+          <article class="check-card reveal">
+            <span class="check-icon" aria-hidden="true">?</span>
+            <h3>Research when it can help.</h3>
+            <p>When the AI has suitable tools and the decision genuinely depends on current information, ASTER can route into research. It doesn’t add research automatically.</p>
+          </article>
+          <article class="check-card reveal">
+            <span class="check-icon" aria-hidden="true">✓</span>
+            <h3>What came out is checked against what went in.</h3>
+            <p>Improving one part should not quietly change the original job. ASTER checks the things that must survive.</p>
+            <div class="retained" aria-label="Examples of retained requirements">
+              <span>Outputs</span><span>Ordering</span><span>Labels</span><span>Schemas</span><span>Permissions</span><span>Fixed rules</span><span>Do-not-change items</span>
+            </div>
+          </article>
+        </div>
+        <p class="aster-it reveal">Improvement should not become task drift.</p>
+      </div>
+    </section>
+
+    <section class="product" aria-labelledby="product-title">
+      <div class="shell product-grid">
+        <div class="reveal">
+          <p class="section-tag">What you get</p>
+          <h2 class="section-heading" id="product-title"><span>ASTER</span> 1.0</h2>
+          <p class="section-lede">A reusable workflow package, ready to give to a capable AI along with the job you want it to perform.</p>
+          <div class="product-buy">
+            <a class="button" href="https://nundrian.gumroad.com/l/bepfhw">Get ASTER</a>
+            <span class="price-lockup"><small>Current price</small><strong>€14.99</strong></span>
+          </div>
+        </div>
+
+        <div class="package reveal">
+          <article class="package-item">
+            <span class="package-mark" aria-hidden="true">A</span>
+            <div><h3>ASTER 1.0</h3><p>The reusable core methodology and supporting reference files for improving, investigating, simplifying, creating and merging workflows.</p></div>
+          </article>
+          <article class="package-item">
+            <span class="package-mark" aria-hidden="true">?</span>
+            <div><h3>Quick Start Guide</h3><p>A plain-English guide showing how to begin and examples of the different jobs ASTER can be given.</p></div>
+          </article>
+          <div class="compatibility"><strong>Tested with GPT-5.6 Sol using Extra High reasoning, and with a GPT agent.</strong> ASTER has not been formally tested across every AI model or service. Model capability, reasoning settings, file handling and available tools can affect the result because the AI still performs the reasoning.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="finale" aria-labelledby="final-title">
+      <div class="shell reveal">
+        <p class="section-tag">The method is the name</p>
+        <h2 id="final-title">It’s all in the name.</h2>
+        <div class="acronym" aria-label="ASTER mnemonic">
+          <div><strong>A</strong><span>Assess it.</span></div>
+          <div><strong>S</strong><span>Scope it.</span></div>
+          <div><strong>T</strong><span>Triage it.</span></div>
+          <div><strong>E</strong><span>Evaluate it.</span></div>
+          <div><strong>R</strong><span>Refine it.</span></div>
+        </div>
+        <p class="finale-call">ASTER it.</p>
+        <a class="button" href="https://nundrian.gumroad.com/l/bepfhw">Get ASTER <span aria-hidden="true">→</span></a>
+        <span class="final-price">Reusable workflow package · <strong>€14.99</strong></span>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell">
+      <span>© 2026 Adrian Davies. ASTER 1.0.</span>
+      <span>Prompt &amp; workflow optimisation.</span>
+    </div>
+  </footer>
+
+  <script>
+    (() => {
+      const root = document.documentElement;
+      const toggle = document.querySelector('.theme-toggle');
+      const media = window.matchMedia('(prefers-color-scheme: dark)');
+
+      const isDark = () => root.dataset.theme === 'dark' || (!root.dataset.theme && media.matches);
+      const updateToggle = () => {
+        const dark = isDark();
+        toggle.setAttribute('aria-pressed', String(dark));
+        toggle.setAttribute('aria-label', dark ? 'Use light mode' : 'Use dark mode');
+      };
+
+      toggle.addEventListener('click', () => {
+        const next = isDark() ? 'light' : 'dark';
+        root.dataset.theme = next;
+        try { localStorage.setItem('aster-theme', next); } catch (error) {}
+        updateToggle();
+      });
+
+      media.addEventListener?.('change', updateToggle);
+      updateToggle();
+
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reveals = document.querySelectorAll('.reveal');
+      if (reduced || !('IntersectionObserver' in window)) {
+        reveals.forEach(element => element.classList.add('seen'));
+      } else {
+        const observer = new IntersectionObserver(entries => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('seen');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: .12, rootMargin: '0px 0px -6% 0px' });
+        reveals.forEach(element => observer.observe(element));
+      }
+    })();
+  </script>
+</body>
+</html>
