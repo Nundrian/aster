@@ -1,0 +1,27 @@
+CV Redesigner Lite publication security check
+Date: 2026-09-01
+
+Files checked before publication:
+- index.html
+- CV_Redesigner_Lite_v1.5.md
+- GUMROAD_PRODUCT_COPY.md (local Gumroad copy only)
+
+Static checks performed:
+- no <script> tags
+- no iframes
+- no forms
+- no inline JavaScript event handlers
+- no javascript: URLs
+- no data: payload URLs
+- no eval/exec/Function-style executable code
+- no object/embed tags
+- no meta-refresh redirects
+- no external HTTP/HTTPS requests in the published landing page or workflow
+- file types confirmed as plain UTF-8 HTML/Markdown/text
+- SHA-256 checksums generated for the published landing page and workflow
+
+Result:
+No executable or suspicious active content was found by the static inspection.
+
+Limit:
+This was a static source inspection, not a signature-based antivirus scan. No antivirus engine was available in the publication environment, so this check should not be described as proof that malware is impossible.
