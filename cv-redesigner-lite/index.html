@@ -5,289 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>CV Redesigner Lite — FREE</title>
 <style>
-  :root{
-    --paper:#f4e5c2;
-    --ink:#24211d;
-    --mustard:#d39a2c;
-    --orange:#c45a2b;
-    --olive:#6f7534;
-    --teal:#2f6f6d;
-    --cream:#fff7e8;
-    --brown:#5a3b27;
-  }
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{
-    margin:0;
-    background:var(--paper);
-    color:var(--ink);
-    font-family:Georgia, 'Times New Roman', serif;
-    line-height:1.45;
-  }
-  a{color:inherit}
-  .grain{
-    min-height:100vh;
-    background-image:
-      radial-gradient(rgba(0,0,0,.055) 0.7px, transparent 0.7px),
-      radial-gradient(rgba(255,255,255,.15) 0.7px, transparent 0.7px);
-    background-position:0 0, 9px 9px;
-    background-size:18px 18px;
-  }
-  .wrap{max-width:1100px;margin:auto;padding:28px}
-  .topline{
-    text-transform:uppercase;
-    letter-spacing:.15em;
-    font-family:Arial, Helvetica, sans-serif;
-    font-weight:800;
-    font-size:.8rem;
-    border-top:4px solid var(--ink);
-    border-bottom:4px solid var(--ink);
-    padding:9px 0;
-    text-align:center;
-  }
-  .hero{
-    position:relative;
-    display:grid;
-    grid-template-columns:1.25fr .75fr;
-    gap:30px;
-    align-items:center;
-    min-height:560px;
-    padding:46px 0 40px;
-  }
-  .eyebrow{
-    font-family:Arial Black, Arial, Helvetica, sans-serif;
-    text-transform:uppercase;
-    color:var(--orange);
-    letter-spacing:.05em;
-    font-size:1.1rem;
-    margin-bottom:8px;
-  }
-  h1{
-    font-family:Arial Black, Impact, Arial, sans-serif;
-    text-transform:uppercase;
-    line-height:.92;
-    letter-spacing:-.045em;
-    margin:0 0 20px;
-    font-size:clamp(3.8rem,9vw,7.8rem);
-  }
-  h1 .free{color:var(--orange);text-shadow:4px 4px 0 var(--mustard)}
-  .subhead{
-    font-size:clamp(1.35rem,2.5vw,2rem);
-    max-width:760px;
-    margin:0 0 24px;
-    font-weight:700;
-  }
-  .pitch{
-    font-size:1.08rem;
-    max-width:760px;
-    margin-bottom:28px;
-  }
-  .cta{
-    display:inline-block;
-    background:var(--ink);
-    color:var(--cream);
-    padding:17px 28px;
-    font-family:Arial Black, Arial, sans-serif;
-    text-transform:uppercase;
-    letter-spacing:.06em;
-    text-decoration:none;
-    border:4px solid var(--ink);
-    box-shadow:8px 8px 0 var(--orange);
-    transition:.15s ease;
-  }
-  .cta:hover{transform:translate(3px,3px);box-shadow:5px 5px 0 var(--orange)}
-  span.cta{cursor:default}
-  .micro{font-size:.84rem;margin-top:12px;font-style:italic}
-  .burst-wrap{display:flex;justify-content:center}
-  .burst{
-    width:320px;
-    aspect-ratio:1;
-    background:var(--mustard);
-    color:var(--ink);
-    display:grid;
-    place-items:center;
-    text-align:center;
-    clip-path:polygon(50% 0%,58% 16%,72% 4%,75% 22%,93% 15%,86% 33%,100% 43%,82% 49%,96% 64%,77% 66%,81% 86%,63% 78%,55% 100%,46% 81%,30% 94%,29% 75%,8% 81%,17% 61%,0% 53%,18% 42%,5% 27%,24% 26%,27% 6%,43% 19%);
-    transform:rotate(-6deg);
-    filter:drop-shadow(10px 10px 0 var(--brown));
-  }
-  .burst strong{
-    display:block;
-    font-family:Arial Black, Arial, sans-serif;
-    font-size:4.2rem;
-    line-height:.82;
-  }
-  .burst span{font-family:Arial Black, Arial, sans-serif;font-size:1.25rem;text-transform:uppercase}
-  .band{
-    margin:10px calc(50% - 50vw) 0;
-    width:100vw;
-    background:var(--orange);
-    color:var(--cream);
-    padding:18px max(28px, calc((100vw - 1100px)/2 + 28px));
-    font-family:Arial Black, Arial, sans-serif;
-    text-transform:uppercase;
-    text-align:center;
-    font-size:clamp(1.4rem,3vw,2.5rem);
-    letter-spacing:.025em;
-  }
-  section{padding:56px 0;border-bottom:2px solid rgba(36,33,29,.35)}
-  h2{
-    font-family:Arial Black, Arial, sans-serif;
-    text-transform:uppercase;
-    letter-spacing:-.025em;
-    font-size:clamp(2.2rem,4.5vw,4.2rem);
-    line-height:1;
-    margin:0 0 25px;
-  }
-  .problems{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:18px;
-  }
-  .card{
-    background:var(--cream);
-    border:3px solid var(--ink);
-    padding:24px;
-    box-shadow:7px 7px 0 var(--olive);
-  }
-  .card .num{
-    font-family:Arial Black, Arial, sans-serif;
-    font-size:2.5rem;
-    color:var(--orange);
-    line-height:1;
-  }
-  .card h3{font-family:Arial Black, Arial, sans-serif;text-transform:uppercase;margin:10px 0 8px;font-size:1.25rem}
-  .split{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:start}
-  .retro-list{list-style:none;padding:0;margin:0}
-  .retro-list li{position:relative;padding:10px 0 10px 34px;border-bottom:1px solid rgba(0,0,0,.18)}
-  .retro-list li:before{content:'★';position:absolute;left:0;color:var(--orange);font-size:1.1rem}
-  .steps{counter-reset:step;display:grid;gap:16px}
-  .step{counter-increment:step;background:var(--cream);border-left:12px solid var(--teal);padding:18px 20px}
-  .step:before{content:counter(step);float:left;font-family:Arial Black, Arial, sans-serif;font-size:2.4rem;line-height:1;margin-right:14px;color:var(--teal)}
-  .step strong{font-family:Arial Black, Arial, sans-serif;text-transform:uppercase}
-  .quote{
-    background:var(--olive);
-    color:var(--cream);
-    padding:36px;
-    font-size:clamp(1.4rem,3vw,2.1rem);
-    font-weight:700;
-    transform:rotate(-1deg);
-    box-shadow:10px 10px 0 var(--mustard);
-  }
-  .smallprint{
-    font-family:Arial, Helvetica, sans-serif;
-    font-size:.88rem;
-    background:#ead8ad;
-    padding:20px;
-    border:2px solid rgba(0,0,0,.25);
-  }
-  .final{text-align:center;padding:70px 0 85px}
-  .final h2{font-size:clamp(3rem,7vw,6rem)}
-  .final p{font-size:1.25rem;max-width:760px;margin:0 auto 28px}
-  footer{padding:22px 0 35px;font-family:Arial,Helvetica,sans-serif;font-size:.82rem;text-align:center}
-  @media (max-width:800px){
-    .hero,.split{grid-template-columns:1fr}
-    .hero{padding-top:36px}
-    .burst{width:min(320px,82vw)}
-    .problems{grid-template-columns:1fr}
-  }
+  :root{--paper:#f4e5c2;--ink:#24211d;--mustard:#d39a2c;--orange:#c45a2b;--olive:#6f7534;--teal:#2f6f6d;--cream:#fff7e8;--brown:#5a3b27}
+  *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;background:var(--paper);color:var(--ink);font-family:Georgia,'Times New Roman',serif;line-height:1.45} a{color:inherit}
+  .grain{min-height:100vh;background-image:radial-gradient(rgba(0,0,0,.055) .7px,transparent .7px),radial-gradient(rgba(255,255,255,.15) .7px,transparent .7px);background-position:0 0,9px 9px;background-size:18px 18px}
+  .wrap{max-width:1100px;margin:auto;padding:28px}.topline{text-transform:uppercase;letter-spacing:.15em;font-family:Arial,Helvetica,sans-serif;font-weight:800;font-size:.8rem;border-top:4px solid var(--ink);border-bottom:4px solid var(--ink);padding:9px 0;text-align:center}
+  .hero{position:relative;display:grid;grid-template-columns:1.25fr .75fr;gap:30px;align-items:center;min-height:560px;padding:46px 0 40px}.eyebrow{font-family:Arial Black,Arial,Helvetica,sans-serif;text-transform:uppercase;color:var(--orange);letter-spacing:.05em;font-size:1.1rem;margin-bottom:8px}
+  h1{font-family:Arial Black,Impact,Arial,sans-serif;text-transform:uppercase;line-height:.92;letter-spacing:-.045em;margin:0 0 20px;font-size:clamp(3.8rem,9vw,7.8rem)}h1 .free{color:var(--orange);text-shadow:4px 4px 0 var(--mustard)}
+  .subhead{font-size:clamp(1.35rem,2.5vw,2rem);max-width:760px;margin:0 0 24px;font-weight:700}.pitch{font-size:1.08rem;max-width:760px;margin-bottom:28px}.cta{display:inline-block;background:var(--ink);color:var(--cream);padding:17px 28px;font-family:Arial Black,Arial,sans-serif;text-transform:uppercase;letter-spacing:.06em;text-decoration:none;border:4px solid var(--ink);box-shadow:8px 8px 0 var(--orange);transition:.15s ease}.cta:hover{transform:translate(3px,3px);box-shadow:5px 5px 0 var(--orange)}.micro{font-size:.84rem;margin-top:12px;font-style:italic}
+  .burst-wrap{display:flex;justify-content:center}.burst{width:320px;aspect-ratio:1;background:var(--mustard);color:var(--ink);display:grid;place-items:center;text-align:center;clip-path:polygon(50% 0%,58% 16%,72% 4%,75% 22%,93% 15%,86% 33%,100% 43%,82% 49%,96% 64%,77% 66%,81% 86%,63% 78%,55% 100%,46% 81%,30% 94%,29% 75%,8% 81%,17% 61%,0% 53%,18% 42%,5% 27%,24% 26%,27% 6%,43% 19%);transform:rotate(-6deg);filter:drop-shadow(10px 10px 0 var(--brown))}.burst strong{display:block;font-family:Arial Black,Arial,sans-serif;font-size:4.2rem;line-height:.82}.burst span{font-family:Arial Black,Arial,sans-serif;font-size:1.25rem;text-transform:uppercase}
+  .band{margin:10px calc(50% - 50vw) 0;width:100vw;background:var(--orange);color:var(--cream);padding:18px max(28px,calc((100vw - 1100px)/2 + 28px));font-family:Arial Black,Arial,sans-serif;text-transform:uppercase;text-align:center;font-size:clamp(1.4rem,3vw,2.5rem);letter-spacing:.025em}
+  section{padding:56px 0;border-bottom:2px solid rgba(36,33,29,.35)}h2{font-family:Arial Black,Arial,sans-serif;text-transform:uppercase;letter-spacing:-.025em;font-size:clamp(2.2rem,4.5vw,4.2rem);line-height:1;margin:0 0 25px}.problems{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{background:var(--cream);border:3px solid var(--ink);padding:24px;box-shadow:7px 7px 0 var(--olive)}.card .num{font-family:Arial Black,Arial,sans-serif;font-size:2.5rem;color:var(--orange);line-height:1}.card h3{font-family:Arial Black,Arial,sans-serif;text-transform:uppercase;margin:10px 0 8px;font-size:1.25rem}.split{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:start}.retro-list{list-style:none;padding:0;margin:0}.retro-list li{position:relative;padding:10px 0 10px 34px;border-bottom:1px solid rgba(0,0,0,.18)}.retro-list li:before{content:'★';position:absolute;left:0;color:var(--orange);font-size:1.1rem}
+  .steps{counter-reset:step;display:grid;gap:16px}.step{counter-increment:step;background:var(--cream);border-left:12px solid var(--teal);padding:18px 20px}.step:before{content:counter(step);float:left;font-family:Arial Black,Arial,sans-serif;font-size:2.4rem;line-height:1;margin-right:14px;color:var(--teal)}.step strong{font-family:Arial Black,Arial,sans-serif;text-transform:uppercase}.quote{background:var(--olive);color:var(--cream);padding:36px;font-size:clamp(1.4rem,3vw,2.1rem);font-weight:700;transform:rotate(-1deg);box-shadow:10px 10px 0 var(--mustard)}.smallprint{font-family:Arial,Helvetica,sans-serif;font-size:.88rem;background:#ead8ad;padding:20px;border:2px solid rgba(0,0,0,.25)}.final{text-align:center;padding:70px 0 85px}.final h2{font-size:clamp(3rem,7vw,6rem)}.final p{font-size:1.25rem;max-width:760px;margin:0 auto 28px}footer{padding:22px 0 35px;font-family:Arial,Helvetica,sans-serif;font-size:.82rem;text-align:center}@media(max-width:800px){.hero,.split{grid-template-columns:1fr}.hero{padding-top:36px}.burst{width:min(320px,82vw)}.problems{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="grain">
   <div class="wrap">
     <div class="topline">A FREE workflow for a CV that needs a new layout — not new words</div>
-
-    <header class="hero">
-      <div>
-        <div class="eyebrow">Still using the same old CV?</div>
-        <h1>Don’t rewrite it.<br><span class="free">Redesign it.</span></h1>
-        <p class="subhead">Your CV may be perfectly good. It may just look old.</p>
-        <p class="pitch">Maybe it’s a PDF and you can’t edit it. Maybe the layout has dated badly. Or maybe you’ve already asked an AI to “improve” it and watched parts of your actual experience disappear. <strong>CV Redesigner Lite</strong> is for the simpler job: keep the CV you already wrote and change how it looks.</p>
-        <a class="cta" href="#get-it">Get the workflow — FREE</a>
-        <div class="micro">The workflow costs nothing. No trial period and no subscription.</div>
-      </div>
-      <div class="burst-wrap">
-        <div class="burst"><div><strong>FREE!</strong><span>Yes. Actually free.</span></div></div>
-      </div>
-    </header>
+    <header class="hero"><div><div class="eyebrow">Still using the same old CV?</div><h1>Don’t rewrite it.<br><span class="free">Redesign it.</span></h1><p class="subhead">Your CV may be perfectly good. It may just look old.</p><p class="pitch">Maybe it’s a PDF and you can’t edit it. Maybe the layout has dated badly. Or maybe you’ve already asked an AI to “improve” it and watched parts of your actual experience disappear. <strong>CV Redesigner Lite</strong> is for the simpler job: keep the CV you already wrote and change how it looks.</p><a class="cta" href="#get-it">Get the workflow — FREE</a><div class="micro">The workflow costs nothing. No trial period and no subscription.</div></div><div class="burst-wrap"><div class="burst"><div><strong>FREE!</strong><span>Yes. Actually free.</span></div></div></div></header>
   </div>
-
   <div class="band">Your CV. Same words. Better layout.</div>
-
   <div class="wrap">
-    <section>
-      <h2>Does this sound familiar?</h2>
-      <div class="problems">
-        <div class="card"><div class="num">01</div><h3>“It’s stuck in a PDF.”</h3><p>Your CV is finished, but changing the layout means editing a PDF or rebuilding the whole thing by hand. If you don’t have a PDF editor, that becomes a nuisance very quickly.</p></div>
-        <div class="card"><div class="num">02</div><h3>“I didn’t ask you to rewrite it.”</h3><p>You asked for a redesign. You didn’t ask for shorter jobs, missing details, invented achievements or a different version of your career.</p></div>
-        <div class="card"><div class="num">03</div><h3>“The content is fine.”</h3><p>It doesn’t need a career makeover. It needs a better layout. That’s the job this workflow is meant to do.</p></div>
-      </div>
-    </section>
-
-    <section class="split">
-      <div>
-        <h2>What it does</h2>
-        <ul class="retro-list">
-          <li>Uses your completed CV as the source document.</li>
-          <li>Tells the AI to preserve the wording rather than rewrite, shorten or tidy it up.</li>
-          <li>Gives you four current Microsoft Word template choices.</li>
-          <li>Gives you three fixed professional colour schemes.</li>
-          <li>Lets you choose PDF, Word, or both.</li>
-          <li>Requires a final check for missing, moved, duplicated or altered content.</li>
-          <li>Supports ATS-minded single- and two-column options.</li>
-        </ul>
-      </div>
-      <div>
-        <h2>What it doesn’t do</h2>
-        <ul class="retro-list">
-          <li>It doesn’t invent achievements.</li>
-          <li>It doesn’t shorten your employment history to make the page look neater.</li>
-          <li>It doesn’t quietly rewrite your tone or wording.</li>
-          <li>It doesn’t turn the job into a bespoke graphic-design exercise.</li>
-          <li>You don’t need to learn PDF editing or document design before you start.</li>
-        </ul>
-      </div>
-    </section>
-
-    <section>
-      <h2>How much work is involved?</h2>
-      <div class="steps">
-        <div class="step"><strong>Upload the CV you already have.</strong><br>That becomes the source document. The wording is supposed to stay put.</div>
-        <div class="step"><strong>Choose a Microsoft template.</strong><br>You get four choices, including ATS-minded single- and two-column options.</div>
-        <div class="step"><strong>Pick a colour scheme.</strong><br>Charcoal, navy or taupe. Nothing complicated.</div>
-        <div class="step"><strong>Choose the output.</strong><br>PDF, Word document, or both, where the AI service supports file generation.</div>
-        <div class="step"><strong>Let the workflow check it.</strong><br>Before delivery, it tells the AI to compare the finished document against your original CV.</div>
-      </div>
-    </section>
-
-    <section>
-      <div class="quote">“The CV is fine. It just looks old.”<br><br>That’s the point.</div>
-    </section>
-
-    <section class="split">
-      <div>
-        <h2>Why FREE?</h2>
-        <p style="font-size:1.2rem"><strong>Because this is the Lite version.</strong> It does one job and keeps the process deliberately simple. If you already have a CV, you shouldn’t have to buy software just to see it in a better layout.</p>
-        <p>There is no charge for the workflow itself.</p>
-      </div>
-      <div class="smallprint">
-        <strong>A practical note:</strong><br><br>
-        The workflow itself is free. File uploads, web access, Word/PDF generation and usage limits depend on the AI service and plan you use. Different assistants can also follow document workflows with different levels of reliability, so check the finished CV before you use it.
-      </div>
-    </section>
-
-    <section class="final" id="get-it">
-      <h2>FREE means FREE.</h2>
-      <p>Keep the CV you wrote. Change the way it looks.</p>
-      <a class="cta" href="CV_Redesigner_Lite_v1.5.md" download>Get CV Redesigner Lite — FREE</a>
-      <div class="micro">Download the workflow directly. No sign-up required.</div>
-    </section>
-
-    <footer>
-      CV Redesigner Lite — a template-led workflow for redesigning an existing CV.<br>
-      Built to change the presentation without rewriting the CV.
-    </footer>
+    <section><h2>Does this sound familiar?</h2><div class="problems"><div class="card"><div class="num">01</div><h3>“It’s stuck in a PDF.”</h3><p>Your CV is finished, but changing the layout means editing a PDF or rebuilding the whole thing by hand. If you don’t have a PDF editor, that becomes a nuisance very quickly.</p></div><div class="card"><div class="num">02</div><h3>“I didn’t ask you to rewrite it.”</h3><p>You asked for a redesign. You didn’t ask for shorter jobs, missing details, invented achievements or a different version of your career.</p></div><div class="card"><div class="num">03</div><h3>“The content is fine.”</h3><p>It doesn’t need a career makeover. It needs a better layout. That’s the job this workflow is meant to do.</p></div></div></section>
+    <section class="split"><div><h2>What it does</h2><ul class="retro-list"><li>Uses your completed CV as the source document.</li><li>Tells the AI to preserve the wording rather than rewrite, shorten or tidy it up.</li><li>Gives you four current Microsoft Word template choices.</li><li>Gives you three fixed professional colour schemes.</li><li>Lets you choose PDF, Word, or both.</li><li>Requires a final check for missing, moved, duplicated or altered content.</li><li>Supports ATS-minded single- and two-column options.</li></ul></div><div><h2>What it doesn’t do</h2><ul class="retro-list"><li>It doesn’t invent achievements.</li><li>It doesn’t shorten your employment history to make the page look neater.</li><li>It doesn’t quietly rewrite your tone or wording.</li><li>It doesn’t turn the job into a bespoke graphic-design exercise.</li><li>You don’t need to learn PDF editing or document design before you start.</li></ul></div></section>
+    <section><h2>How much work is involved?</h2><div class="steps"><div class="step"><strong>Upload the CV you already have.</strong><br>That becomes the source document. The wording is supposed to stay put.</div><div class="step"><strong>Choose a Microsoft template.</strong><br>You get four choices, including ATS-minded single- and two-column options.</div><div class="step"><strong>Pick a colour scheme.</strong><br>Charcoal, navy or taupe. Nothing complicated.</div><div class="step"><strong>Choose the output.</strong><br>PDF, Word document, or both, where the AI service supports file generation.</div><div class="step"><strong>Let the workflow check it.</strong><br>Before delivery, it tells the AI to compare the finished document against your original CV.</div></div></section>
+    <section><div class="quote">“The CV is fine. It just looks old.”<br><br>That’s the point.</div></section>
+    <section class="split"><div><h2>Why FREE?</h2><p style="font-size:1.2rem"><strong>Because this is the Lite version.</strong> It does one job and keeps the process deliberately simple. If you already have a CV, you shouldn’t have to buy software just to see it in a better layout.</p><p>There is no charge for the workflow itself.</p></div><div class="smallprint"><strong>A practical note:</strong><br><br>The workflow itself is free. File uploads, web access, Word/PDF generation and usage limits depend on the AI service and plan you use. Different assistants can also follow document workflows with different levels of reliability, so check the finished CV before you use it.</div></section>
+    <section class="final" id="get-it"><h2>FREE means FREE.</h2><p>Keep the CV you wrote. Change the way it looks.</p><a class="cta" href="CV%20redesigner%20lite.md" download>Get CV Redesigner Lite — FREE</a><div class="micro">Download the workflow directly. No sign-up required.</div></section>
+    <footer>CV Redesigner Lite — a template-led workflow for redesigning an existing CV.<br>Built to change the presentation without rewriting the CV.</footer>
   </div>
 </div>
 </body>
