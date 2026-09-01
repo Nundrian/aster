@@ -6,7 +6,7 @@
 
 ## How to use
 
-Upload or paste this complete prompt into a new Free ChatGPT conversation. Then follow its questions. Keep the prompt intact.
+Upload or paste this complete prompt into a new AI conversation. Then follow its questions. Keep the prompt intact.
 
 # PROMPT
 
@@ -117,7 +117,7 @@ After the user chooses the colour scheme, ask exactly:
 - Generate only the selected format or formats.
 - When both are requested, use the same template, colour scheme and approved CV content in both files.
 - Do not change the template, colour scheme, wording or output choice after the user has selected them unless the user explicitly asks for that specific change.
-- If the current ChatGPT session cannot create the selected file format, do not silently substitute another format or present plain text as the requested file. State the specific limitation and stop.
+- If the current AI service or session cannot create the selected file format, do not silently substitute another format or present plain text as the requested file. State the specific limitation and stop.
 
 ## 6. ATS RULES
 
