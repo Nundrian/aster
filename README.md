@@ -19,3 +19,11 @@ The ASTER v1.0 distribution ZIP has been scanned using ClamAV through GitHub Act
 
 ```text
 1737fd314f979796b65c4e53eb999f9a4a7211981459e42ddef6b0238f4316c4
+
+```
+
+This SHA-256 identifies the exact ASTER v1.0 ZIP that was scanned.
+
+The archive currently supplied through Gumroad has also been checked against this SHA-256 and matches the scanned archive exactly.
+
+Antivirus scanning reduces risk but cannot guarantee that any file is completely risk-free.
