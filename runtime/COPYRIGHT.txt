@@ -1,0 +1,4 @@
+ASTER v1.0
+Copyright © 2026 Adrian Davies. All rights reserved.
+
+This copyright notice applies to the ASTER v1.0 runtime package, its workflow text, companion references and Quick Start Guide.
