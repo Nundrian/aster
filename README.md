@@ -53,7 +53,7 @@ ASTER can assist in designing these prompts; **it does not run tasks, automatica
 
 ## Download and use
 
-The current v1.0 runtime archive is **[ASTER_v1.0_CURRENT.zip](ASTER_v1.0_CURRENT.zip)**.
+The current CC BY 4.0 licensed v1.0 runtime archive is **[ASTER_v1.0_CURRENT.zip](ASTER_v1.0_CURRENT.zip)**.
 
 1. Download the ZIP (or clone the repository).
 2. Upload the archive to a model that can read the files. Alternatively supply the individual Markdown files.
@@ -61,11 +61,11 @@ The current v1.0 runtime archive is **[ASTER_v1.0_CURRENT.zip](ASTER_v1.0_CURREN
 4. The router loads `ASTER_CORE_WORKFLOW.md`; supporting references are opened only when the Core's relevant gate activates.
 5. Review the output against the original requirements; verify important results independently.
 
-The runtime package includes the router, Core, runtime guide, semantic-steering reference, workflow-design research reference, volatile-source discovery reference, copyright notice and SHA-256 manifest. The extracted files are also provided under **[runtime/](runtime/)** for inspection and reuse.
+The runtime package includes the router, Core, runtime guide, semantic-steering reference, workflow-design research reference, volatile-source discovery reference, copyright notice, CC BY 4.0 licence notice and SHA-256 manifest. The extracted files are also provided under **[runtime/](runtime/)** for inspection and reuse.
 
-**Package verification:** Original archive SHA-256:
-`1737fd314f979796b65c4e53eb999f9a4a7211981459e42ddef6b0238f4316c4`.
-Each runtime source file matched the supplied archive's `SHA256SUMS.txt` when inspected for publication.
+**Current CC BY 4.0 archive SHA-256:** `d43386df9e3e7af8492e581fe0e22e0d470058bdb9ef04ccc2cb0139dfe6e888`. Its `SHA256SUMS.txt` lists the contents for independent verification. Only the copyright/licence notices were changed in the six workflow/reference files; the operational instructions are unchanged.
+
+**Historical provenance:** The pre-licence archive SHA-256 was `1737fd314f979796b65c4e53eb999f9a4a7211981459e42ddef6b0238f4316c4`. That checksum does **not** apply to the current licensed ZIP.
 
 ## Evidence and research
 
@@ -73,10 +73,12 @@ ASTER emerged from iterative prompt/workflow experiments, including longer codin
 
 The accompanying workflow-design reference has a research cut-off of 24 August 2026; current provider capabilities should be verified separately.
 
-## Copyright and permissions
+## Licence — CC BY 4.0
 
-© 2026 Adrian Davies. The uploaded v1.0 runtime declares **all rights reserved**. It is now publicly available **at no charge**, but public GitHub visibility alone does **not** grant open-source redistribution or modification rights. A separate permissive licence would be needed if the author wishes to allow unrestricted community forks and contributions.
+© 2026 Adrian Davies. ASTER is available under **[Creative Commons Attribution 4.0 International (CC BY 4.0)](LICENSE.md)**. You may use, modify, copy, share and redistribute ASTER for **personal or commercial** purposes. When sharing ASTER or adaptations, credit the creator, link to the licence and indicate changes. The official [legal code](https://creativecommons.org/licenses/by/4.0/legalcode) governs. No endorsement is implied, and the material is provided without warranty.
+
+Suggested attribution: **ASTER v1.0 by Adrian Davies — CC BY 4.0 — https://github.com/Nundrian/aster**.
 
 ## Security and integrity
 
-The previously recorded ClamAV scan on 31 August 2026 reported 9 scanned files, no detections, and a passing ZIP integrity check. The SHA-256 above identifies that particular archive. This historical scan is not a guarantee of safety or a substitute for checking future versions.
+The ClamAV scan recorded on 31 August 2026 reported nine scanned files and no detections for the **pre-licence archive**, not the new CC BY 4.0 ZIP. The updated release has new notices and checksums; this is not a new malware scan. Antivirus screening cannot guarantee safety.
