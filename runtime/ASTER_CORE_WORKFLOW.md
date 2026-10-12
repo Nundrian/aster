@@ -1,6 +1,6 @@
 # ASTER Core Workflow v1.0
 
-Copyright © 2026 Adrian Davies. All rights reserved.
+Copyright © 2026 Adrian Davies. Licensed under CC BY 4.0: https://creativecommons.org/licenses/by/4.0/
 
 
 ## Purpose
