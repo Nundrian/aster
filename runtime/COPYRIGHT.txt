@@ -1,4 +1,12 @@
 ASTER v1.0
-Copyright © 2026 Adrian Davies. All rights reserved.
+Copyright © 2026 Adrian Davies.
 
-This copyright notice applies to the ASTER v1.0 runtime package, its workflow text, companion references and Quick Start Guide.
+The original ASTER workflow texts, supporting references and documentation are licensed under the Creative Commons Attribution 4.0 International licence (CC BY 4.0).
+Licence: https://creativecommons.org/licenses/by/4.0/
+Legal code: https://creativecommons.org/licenses/by/4.0/legalcode
+
+You may copy, use, share, adapt and redistribute the licensed material for any purpose, including commercially. When sharing it, give appropriate credit, provide a licence link and indicate changes. Do not imply endorsement.
+
+Suggested attribution: ASTER v1.0 by Adrian Davies, CC BY 4.0 — https://github.com/Nundrian/aster
+
+No warranties are provided. Any third-party material retains its own rights.
