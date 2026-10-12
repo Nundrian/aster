@@ -1,6 +1,6 @@
 # ASTER v1.0 — Read First
 
-Copyright © 2026 Adrian Davies. All rights reserved.
+Copyright © 2026 Adrian Davies. Licensed under CC BY 4.0: https://creativecommons.org/licenses/by/4.0/
 
 This file controls how the ASTER package is loaded. It does not replace the Core workflow.
 
