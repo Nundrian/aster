@@ -1,6 +1,6 @@
 # ASTER Workflow Design Research Reference
 
-Copyright © 2026 Adrian Davies. All rights reserved.
+Copyright © 2026 Adrian Davies. Licensed under CC BY 4.0: https://creativecommons.org/licenses/by/4.0/
 
 **Status:** Companion research reference for ASTER v1.0  
 **Research cut-off:** 24 August 2026  
