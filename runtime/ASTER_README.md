@@ -1,6 +1,6 @@
 # ASTER v1.0 — Runtime Guide
 
-Copyright © 2026 Adrian Davies. All rights reserved.
+Copyright © 2026 Adrian Davies. Licensed under CC BY 4.0: https://creativecommons.org/licenses/by/4.0/
 
 ASTER is a file-based research-and-judgement workflow for creating or improving prompts and AI workflows. Its purpose is to protect the original task, decide which design questions actually matter, use research selectively, make the smallest justified change, and check the finished result against the original contract.
 
