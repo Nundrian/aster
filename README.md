@@ -81,4 +81,12 @@ Suggested attribution: **ASTER v1.0 by Adrian Davies — CC BY 4.0 — https://g
 
 ## Security and integrity
 
-The ClamAV scan recorded on 31 August 2026 reported nine scanned files and no detections for the **pre-licence archive**, not the new CC BY 4.0 ZIP. The updated release has new notices and checksums; this is not a new malware scan. Antivirus screening cannot guarantee safety.
+**Fresh ClamAV scan: PASSED — 12 October 2026.** The [CC BY 4.0 release ZIP](ASTER_v1.0_CURRENT.zip) was downloaded directly from this public repository and checked in a GitHub Actions security workflow. The job verified the exact archive SHA-256, ZIP integrity, and every internal `SHA256SUMS.txt` entry before scanning the archive and its extracted contents.
+
+- ClamAV engine: **1.5.4**, updated virus database **28150** (11 October 2026).
+- Files scanned: **10** (ZIP plus nine extracted files).
+- Infected files: **0**.
+- Checked archive SHA-256: `d43386df9e3e7af8492e581fe0e22e0d470058bdb9ef04ccc2cb0139dfe6e888`.
+- Scan status: **GitHub Actions run [38196029054](https://github.com/Nundrian/aster-security/actions/runs/38196029054), successful** (the security repository is private).
+
+The historical 31 August 2026 scan applies to the earlier, pre-licence archive. Antivirus scanning reduces risk but does **not** guarantee that a file is free from every possible threat.
