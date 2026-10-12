@@ -1,0 +1,18 @@
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+© 2026 Adrian Davies
+ASTER v1.0 — original workflow, prompts and supporting documentation.
+
+This material is licensed under the Creative Commons Attribution 4.0 International licence.
+You are free to share and adapt it for any purpose, including commercial purposes, provided you follow the licence's attribution requirements. Attribution includes creator credit, the licence link and an indication of changes when sharing adapted material. No endorsement is implied.
+
+Read the full authoritative legal code at:
+https://creativecommons.org/licenses/by/4.0/legalcode
+
+Licence overview:
+https://creativecommons.org/licenses/by/4.0/
+
+Suggested attribution:
+ASTER v1.0 by Adrian Davies, licensed CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Source: https://github.com/Nundrian/aster
+
+NO WARRANTIES are provided. Third-party content is excluded where not owned by the licensor.
