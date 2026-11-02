@@ -1,6 +1,6 @@
 # ASTER v1.0 — task fidelity and disciplined prompt/workflow design
 
-**Not an ordinary prompt optimiser.** ASTER is a reusable methodology for designing, examining and repairing prompts and AI workflows **without quietly changing the task they are meant to accomplish**. It is intended to work with a capable AI assistant; ASTER itself is not a model, agent runtime or execution engine.
+ASTER is a reusable method for designing and improving AI prompts and workflows while preserving the original task. It examines what works, identifies specific weaknesses and makes only the changes that have a clear purpose. It runs through an existing AI assistant; ASTER is not a separate model or execution engine.
 
 **Status:** The repository is public and the workflow is free to access. ASTER v1.0 is an identified release, not a claim of universally proven performance across models.
 
